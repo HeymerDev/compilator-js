@@ -1,49 +1,109 @@
-function analizar() {
-  const entrada = document.getElementById("codigo").value.trim();
+const btnAnalizar = document.getElementById("btnAnalizar");
+
+btnAnalizar.addEventListener("click", analizarCodigo);
+
+function analizarCodigo() {
+  const codigo = document.getElementById("codigo").value;
   const resultado = document.getElementById("resultado");
 
   resultado.innerHTML = "";
 
-  const regex = /^([a-zA-Z][a-zA-Z0-9]*)\s(Entero|Texto|Real|Logico);$/;
+  const lineas = codigo.split("\n");
 
-  const match = entrada.match(regex);
+  // Tabla de símbolos
+  const variables = {};
 
-  if (match) {
-    const nombreVariable = match[1];
-    const tipoDato = match[2];
+  const errores = [];
 
-    resultado.innerHTML = `
-          <div class="correcto">
-            Declaración válida
-          </div>
+  // Expresiones regulares
+  const regexDeclaracion =
+    /^([a-zA-Z][a-zA-Z0-9]*)\s(Entero|Texto|Real|Logico);$/;
 
-          <table>
-            <tr>
-              <th>Token</th>
-              <th>Lexema</th>
-            </tr>
+  const regexCaptura =
+    /^([a-zA-Z][a-zA-Z0-9]*)\s*=\s*Captura\.(Entero|Texto|Real|Logico)\(\);$/;
 
-            <tr>
-              <td>IDENTIFICADOR</td>
-              <td>${nombreVariable}</td>
-            </tr>
+  lineas.forEach((linea, index) => {
+    const numeroLinea = index + 1;
 
-            <tr>
-              <td>TIPO_DATO</td>
-              <td>${tipoDato}</td>
-            </tr>
+    linea = linea.trim();
 
-            <tr>
-              <td>FIN_SENTENCIA</td>
-              <td>;</td>
-            </tr>
-          </table>
-        `;
+    if (linea === "") {
+      return;
+    }
+
+    // =========================
+    // DECLARACIÓN
+    // =========================
+
+    if (regexDeclaracion.test(linea)) {
+      const match = linea.match(regexDeclaracion);
+
+      const nombreVariable = match[1];
+      const tipoDato = match[2];
+
+      // Guardar en tabla de símbolos
+      variables[nombreVariable] = tipoDato;
+
+      return;
+    }
+
+    // =========================
+    // CAPTURA
+    // =========================
+
+    if (regexCaptura.test(linea)) {
+      const match = linea.match(regexCaptura);
+
+      const nombreVariable = match[1];
+      const tipoCaptura = match[2];
+
+      // Validar si existe
+      if (!variables[nombreVariable]) {
+        errores.push(
+          `Error en línea ${numeroLinea}: Variable '${nombreVariable}' no definida`,
+        );
+
+        return;
+      }
+
+      // Validar tipo
+      const tipoVariable = variables[nombreVariable];
+
+      if (tipoVariable !== tipoCaptura) {
+        errores.push(
+          `Error en línea ${numeroLinea}: La captura no corresponde al tipo '${tipoVariable}'`,
+        );
+
+        return;
+      }
+
+      return;
+    }
+
+    // =========================
+    // ERROR GENERAL
+    // =========================
+
+    errores.push(`Error sintáctico en línea ${numeroLinea}`);
+  });
+
+  // =========================
+  // MOSTRAR RESULTADOS
+  // =========================
+
+  if (errores.length > 0) {
+    errores.forEach((error) => {
+      resultado.innerHTML += `
+        <div class="error">
+          ${error}
+        </div>
+      `;
+    });
   } else {
     resultado.innerHTML = `
-          <div class="error">
-            Error sintáctico en la declaración
-          </div>
-        `;
+      <div class="correcto">
+        Código compilado correctamente
+      </div>
+    `;
   }
 }

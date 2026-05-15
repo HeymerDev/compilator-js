@@ -2,17 +2,19 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <link rel="stylesheet" href="style.css" />
     <title>Mini Compilador</title>
+    <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <h1>Mini Compilador</h1>
+    <div class="container">
+      <h1>Mini Compilador</h1>
 
-    <input type="text" id="codigo" placeholder="Ejemplo: edad Entero;" />
+      <textarea id="codigo" placeholder="Escribe tu código aquí..."></textarea>
 
-    <button onclick="analizar()">Analizar</button>
+      <button id="btnAnalizar">Compilar Código</button>
 
-    <div id="resultado"></div>
+      <div id="resultado"></div>
+    </div>
 
     <script src="script.js"></script>
   </body>
