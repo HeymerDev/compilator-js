@@ -11,7 +11,10 @@ function analizarCodigo() {
 
   const lineas = codigo.split("\n");
 
-  // Tabla de símbolos
+  // =========================
+  // TABLA DE SÍMBOLOS
+  // =========================
+
   const variables = {};
 
   const errores = [];
@@ -53,6 +56,15 @@ function analizarCodigo() {
       const nombreVariable = match[1];
       const tipoDato = match[2];
 
+      // Variable repetida
+      if (variables[nombreVariable]) {
+        errores.push(
+          `Error en línea ${numeroLinea}: La variable '${nombreVariable}' ya fue declarada`,
+        );
+
+        return;
+      }
+
       variables[nombreVariable] = tipoDato;
 
       return;
@@ -68,6 +80,7 @@ function analizarCodigo() {
       const nombreVariable = match[1];
       const tipoCaptura = match[2];
 
+      // Variable existe
       if (!variables[nombreVariable]) {
         errores.push(
           `Error en línea ${numeroLinea}: Variable '${nombreVariable}' no definida`,
@@ -78,6 +91,7 @@ function analizarCodigo() {
 
       const tipoVariable = variables[nombreVariable];
 
+      // Validar tipo
       if (tipoVariable !== tipoCaptura) {
         errores.push(
           `Error en línea ${numeroLinea}: La captura no corresponde al tipo '${tipoVariable}'`,
@@ -94,24 +108,68 @@ function analizarCodigo() {
     // =========================
 
     if (regexMensaje.test(linea)) {
-      const contenido = linea.match(regexMensaje)[1];
+      const contenido = linea.match(regexMensaje)[1].trim();
 
-      // Buscar variables concatenadas
-      // Ejemplo:
-      // "Hola", nombre
+      // =========================
+      // VALIDAR COMILLAS
+      // =========================
+
+      const cantidadComillas = (contenido.match(/"/g) || []).length;
+
+      // Deben ser pares
+      if (cantidadComillas % 2 !== 0) {
+        errores.push(`Error sintáctico en línea ${numeroLinea}`);
+
+        return;
+      }
+
+      // =========================
+      // VALIDAR COMA FINAL
+      // =========================
+
+      if (contenido.endsWith(",")) {
+        errores.push(`Error sintáctico en línea ${numeroLinea}`);
+
+        return;
+      }
+
+      // =========================
+      // DIVIDIR PARTES
+      // =========================
 
       const partes = contenido.split(",");
 
       for (let parte of partes) {
         parte = parte.trim();
 
-        // Si NO es string
-        if (!parte.startsWith('"')) {
-          if (!variables[parte]) {
-            errores.push(
-              `Error en línea ${numeroLinea}: Variable '${parte}' no definida`,
-            );
+        // Vacío
+        if (parte === "") {
+          errores.push(`Error sintáctico en línea ${numeroLinea}`);
+
+          return;
+        }
+
+        // =========================
+        // STRING
+        // =========================
+
+        if (parte.startsWith('"')) {
+          // Debe cerrar
+          if (!parte.endsWith('"')) {
+            errores.push(`Error sintáctico en línea ${numeroLinea}`);
           }
+
+          continue;
+        }
+
+        // =========================
+        // VARIABLE
+        // =========================
+
+        if (!variables[parte]) {
+          errores.push(
+            `Error en línea ${numeroLinea}: Variable '${parte}' no definida`,
+          );
         }
       }
 
@@ -128,7 +186,10 @@ function analizarCodigo() {
       const variableDestino = match[1];
       const expresion = match[2].trim();
 
-      // Variable existe
+      // =========================
+      // VARIABLE DESTINO EXISTE
+      // =========================
+
       if (!variables[variableDestino]) {
         errores.push(
           `Error en línea ${numeroLinea}: Variable '${variableDestino}' no definida`,
@@ -140,14 +201,24 @@ function analizarCodigo() {
       const tipoVariable = variables[variableDestino];
 
       // =========================
+      // VALIDAR COMILLAS
+      // =========================
+
+      const cantidadComillas = (expresion.match(/"/g) || []).length;
+
+      if (cantidadComillas % 2 !== 0) {
+        errores.push(`Error sintáctico en línea ${numeroLinea}`);
+
+        return;
+      }
+
+      // =========================
       // TEXTO
       // =========================
 
-      if (expresion.startsWith('"')) {
+      if (/^".*"$/.test(expresion)) {
         if (tipoVariable !== "Texto") {
-          errores.push(
-            `Error en línea ${numeroLinea}: Se esperaba tipo '${tipoVariable}'`,
-          );
+          errores.push(`Error en línea ${numeroLinea}: Tipos incompatibles`);
         }
 
         return;
@@ -159,9 +230,7 @@ function analizarCodigo() {
 
       if (/^\d+\.\d+$/.test(expresion)) {
         if (tipoVariable !== "Real") {
-          errores.push(
-            `Error en línea ${numeroLinea}: Se esperaba tipo '${tipoVariable}'`,
-          );
+          errores.push(`Error en línea ${numeroLinea}: Tipos incompatibles`);
         }
 
         return;
@@ -173,9 +242,7 @@ function analizarCodigo() {
 
       if (/^\d+$/.test(expresion)) {
         if (tipoVariable !== "Entero") {
-          errores.push(
-            `Error en línea ${numeroLinea}: Se esperaba tipo '${tipoVariable}'`,
-          );
+          errores.push(`Error en línea ${numeroLinea}: Tipos incompatibles`);
         }
 
         return;
@@ -187,9 +254,31 @@ function analizarCodigo() {
 
       if (expresion === "true" || expresion === "false") {
         if (tipoVariable !== "Logico") {
+          errores.push(`Error en línea ${numeroLinea}: Tipos incompatibles`);
+        }
+
+        return;
+      }
+
+      // =========================
+      // ASIGNACIÓN ENTRE VARIABLES
+      // =========================
+
+      if (/^[a-zA-Z][a-zA-Z0-9]*$/.test(expresion)) {
+        // Existe variable origen
+        if (!variables[expresion]) {
           errores.push(
-            `Error en línea ${numeroLinea}: Se esperaba tipo '${tipoVariable}'`,
+            `Error en línea ${numeroLinea}: Variable '${expresion}' no definida`,
           );
+
+          return;
+        }
+
+        const tipoOrigen = variables[expresion];
+
+        // Tipos compatibles
+        if (tipoOrigen !== tipoVariable) {
+          errores.push(`Error en línea ${numeroLinea}: Tipos incompatibles`);
         }
 
         return;
@@ -199,6 +288,15 @@ function analizarCodigo() {
       // EXPRESIONES MATEMÁTICAS
       // =========================
 
+      // Detectar texto en operación
+      if (/".*"/.test(expresion)) {
+        errores.push(
+          `Error en línea ${numeroLinea}: No se puede usar Texto en operaciones matemáticas`,
+        );
+
+        return;
+      }
+
       const variablesExpresion = expresion.match(/[a-zA-Z][a-zA-Z0-9]*/g);
 
       if (variablesExpresion) {
@@ -207,8 +305,26 @@ function analizarCodigo() {
             errores.push(
               `Error en línea ${numeroLinea}: Variable '${variable}' no definida`,
             );
+
+            continue;
+          }
+
+          const tipoVar = variables[variable];
+
+          // No permitir Texto o Logico
+          if (tipoVar === "Texto" || tipoVar === "Logico") {
+            errores.push(
+              `Error en línea ${numeroLinea}: Variable '${variable}' incompatible en operación matemática`,
+            );
           }
         }
+      }
+
+      // Variable destino debe ser numérica
+      if (tipoVariable !== "Entero" && tipoVariable !== "Real") {
+        errores.push(
+          `Error en línea ${numeroLinea}: No se puede asignar operación matemática a '${tipoVariable}'`,
+        );
       }
 
       return;
