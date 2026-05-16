@@ -2,19 +2,50 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <title>Mini Compilador</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Costeñol IDE</title>
+
     <link rel="stylesheet" href="style.css" />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
   </head>
+
   <body>
-    <div class="container">
-      <h1>Mini Compilador</h1>
+    <!-- TOP NAVBAR -->
+    <header class="navbar">
+      <div class="logo">⚡ Costeñol</div>
 
-      <textarea id="codigo" placeholder="Escribe tu código aquí..."></textarea>
+      <button id="btnAnalizar" class="run-button">▶</button>
+    </header>
 
-      <button id="btnAnalizar">Compilar Código</button>
+    <!-- TABS -->
+    <div class="tabs">
+      <div class="tab active">main.pqek</div>
+    </div>
+
+    <!-- EDITOR -->
+    <main class="editor-container">
+      <!-- LINE NUMBERS -->
+      <div class="line-numbers" id="lineNumbers">1</div>
+
+      <!-- CODE -->
+      <textarea
+        id="codigo"
+        spellcheck="false"
+        placeholder="// Bienvenido a Costeñol 😎"
+      ></textarea>
+    </main>
+
+    <!-- BOTTOM PANEL -->
+    <footer class="bottom-panel">
+      <div class="panel-header">PROBLEMAS</div>
 
       <div id="resultado"></div>
-    </div>
+    </footer>
 
     <script src="script.js"></script>
   </body>
