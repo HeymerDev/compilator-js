@@ -4,6 +4,7 @@ btnAnalizar.addEventListener("click", analizarCodigo);
 
 function analizarCodigo() {
   const codigo = document.getElementById("codigo").value;
+
   const resultado = document.getElementById("resultado");
 
   resultado.innerHTML = "";
@@ -15,12 +16,23 @@ function analizarCodigo() {
 
   const errores = [];
 
-  // Expresiones regulares
+  // =========================
+  // REGEX
+  // =========================
+
   const regexDeclaracion =
     /^([a-zA-Z][a-zA-Z0-9]*)\s(Entero|Texto|Real|Logico);$/;
 
   const regexCaptura =
     /^([a-zA-Z][a-zA-Z0-9]*)\s*=\s*Captura\.(Entero|Texto|Real|Logico)\(\);$/;
+
+  const regexAsignacion = /^([a-zA-Z][a-zA-Z0-9]*)\s*=\s*(.+);$/;
+
+  const regexMensaje = /^Mensaje\.Texto\((.+)\);$/;
+
+  // =========================
+  // RECORRER LÍNEAS
+  // =========================
 
   lineas.forEach((linea, index) => {
     const numeroLinea = index + 1;
@@ -41,7 +53,6 @@ function analizarCodigo() {
       const nombreVariable = match[1];
       const tipoDato = match[2];
 
-      // Guardar en tabla de símbolos
       variables[nombreVariable] = tipoDato;
 
       return;
@@ -57,7 +68,6 @@ function analizarCodigo() {
       const nombreVariable = match[1];
       const tipoCaptura = match[2];
 
-      // Validar si existe
       if (!variables[nombreVariable]) {
         errores.push(
           `Error en línea ${numeroLinea}: Variable '${nombreVariable}' no definida`,
@@ -66,7 +76,6 @@ function analizarCodigo() {
         return;
       }
 
-      // Validar tipo
       const tipoVariable = variables[nombreVariable];
 
       if (tipoVariable !== tipoCaptura) {
@@ -81,6 +90,131 @@ function analizarCodigo() {
     }
 
     // =========================
+    // MENSAJE.TEXTO()
+    // =========================
+
+    if (regexMensaje.test(linea)) {
+      const contenido = linea.match(regexMensaje)[1];
+
+      // Buscar variables concatenadas
+      // Ejemplo:
+      // "Hola", nombre
+
+      const partes = contenido.split(",");
+
+      for (let parte of partes) {
+        parte = parte.trim();
+
+        // Si NO es string
+        if (!parte.startsWith('"')) {
+          if (!variables[parte]) {
+            errores.push(
+              `Error en línea ${numeroLinea}: Variable '${parte}' no definida`,
+            );
+          }
+        }
+      }
+
+      return;
+    }
+
+    // =========================
+    // ASIGNACIONES
+    // =========================
+
+    if (regexAsignacion.test(linea)) {
+      const match = linea.match(regexAsignacion);
+
+      const variableDestino = match[1];
+      const expresion = match[2].trim();
+
+      // Variable existe
+      if (!variables[variableDestino]) {
+        errores.push(
+          `Error en línea ${numeroLinea}: Variable '${variableDestino}' no definida`,
+        );
+
+        return;
+      }
+
+      const tipoVariable = variables[variableDestino];
+
+      // =========================
+      // TEXTO
+      // =========================
+
+      if (expresion.startsWith('"')) {
+        if (tipoVariable !== "Texto") {
+          errores.push(
+            `Error en línea ${numeroLinea}: Se esperaba tipo '${tipoVariable}'`,
+          );
+        }
+
+        return;
+      }
+
+      // =========================
+      // REAL
+      // =========================
+
+      if (/^\d+\.\d+$/.test(expresion)) {
+        if (tipoVariable !== "Real") {
+          errores.push(
+            `Error en línea ${numeroLinea}: Se esperaba tipo '${tipoVariable}'`,
+          );
+        }
+
+        return;
+      }
+
+      // =========================
+      // ENTERO
+      // =========================
+
+      if (/^\d+$/.test(expresion)) {
+        if (tipoVariable !== "Entero") {
+          errores.push(
+            `Error en línea ${numeroLinea}: Se esperaba tipo '${tipoVariable}'`,
+          );
+        }
+
+        return;
+      }
+
+      // =========================
+      // LOGICO
+      // =========================
+
+      if (expresion === "true" || expresion === "false") {
+        if (tipoVariable !== "Logico") {
+          errores.push(
+            `Error en línea ${numeroLinea}: Se esperaba tipo '${tipoVariable}'`,
+          );
+        }
+
+        return;
+      }
+
+      // =========================
+      // EXPRESIONES MATEMÁTICAS
+      // =========================
+
+      const variablesExpresion = expresion.match(/[a-zA-Z][a-zA-Z0-9]*/g);
+
+      if (variablesExpresion) {
+        for (let variable of variablesExpresion) {
+          if (!variables[variable]) {
+            errores.push(
+              `Error en línea ${numeroLinea}: Variable '${variable}' no definida`,
+            );
+          }
+        }
+      }
+
+      return;
+    }
+
+    // =========================
     // ERROR GENERAL
     // =========================
 
@@ -88,7 +222,7 @@ function analizarCodigo() {
   });
 
   // =========================
-  // MOSTRAR RESULTADOS
+  // RESULTADOS
   // =========================
 
   if (errores.length > 0) {
