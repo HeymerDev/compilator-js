@@ -97,6 +97,17 @@ body {
   overflow: hidden;
 }
 
+.resize-bar {
+  height: 6px;
+  background: #2d2d2d;
+  cursor: ns-resize;
+  transition: background 0.2s;
+}
+
+.resize-bar:hover {
+  background: #007acc;
+}
+
 /* LINE NUMBERS */
 
 .line-numbers {
@@ -141,7 +152,9 @@ body {
 ========================= */
 
 .bottom-panel {
-  height: 140px;
+  height: 180px;
+  min-height: 100px;
+  max-height: 500px;
   background: #181818;
   border-top: 1px solid #2d2d2d;
 
