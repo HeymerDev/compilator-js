@@ -19,7 +19,7 @@ export function validarCaptura(linea, numeroLinea, variables, errores) {
     return true;
   }
 
-  const tipoVariable = variables[nombreVariable];
+  const tipoVariable = variables[nombreVariable].tipo;
 
   if (tipoVariable !== tipoCaptura) {
     errores.push(

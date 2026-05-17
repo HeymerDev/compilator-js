@@ -1,3 +1,5 @@
+import { ejecutarCodigo } from "../runtime/ejecutar.js";
+
 import { validarDeclaracion } from "./declaration.js";
 
 import { validarCaptura } from "./captures.js";
@@ -32,6 +34,10 @@ export function analizarCodigo(codigo) {
 
     errores.push(`Error sintáctico en línea ${numeroLinea}`);
   });
+
+  if (errores.length === 0) {
+    ejecutarCodigo(lineas, variables);
+  }
 
   return errores;
 }

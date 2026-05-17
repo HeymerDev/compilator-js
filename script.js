@@ -4,6 +4,8 @@ import "./resize.js";
 
 import { analizarCodigo } from "./compiler/compiler.js";
 
+import { escribirTerminal, limpiarTerminal } from "./runtime/terminal.js";
+
 const btnAnalizar = document.getElementById("btnAnalizar");
 
 btnAnalizar.addEventListener("click", ejecutarCompilador);
@@ -11,25 +13,15 @@ btnAnalizar.addEventListener("click", ejecutarCompilador);
 function ejecutarCompilador() {
   const codigo = document.getElementById("codigo").value;
 
-  const resultado = document.getElementById("resultado");
-
-  resultado.innerHTML = "";
+  limpiarTerminal();
 
   const errores = analizarCodigo(codigo);
 
   if (errores.length > 0) {
     errores.forEach((error) => {
-      resultado.innerHTML += `
-        <div class="error">
-          ${error}
-        </div>
-      `;
+      escribirTerminal(error, "error");
     });
   } else {
-    resultado.innerHTML = `
-      <div class="correcto">
-        Código compilado correctamente
-      </div>
-    `;
+    escribirTerminal("Código compilado correctamente", "correcto");
   }
 }

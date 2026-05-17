@@ -11,7 +11,9 @@ export function validarAsignacion(linea, numeroLinea, variables, errores) {
 
   const expresion = match[2].trim();
 
+  // =========================
   // VARIABLE DESTINO
+  // =========================
 
   if (!variables[variableDestino]) {
     errores.push(
@@ -21,9 +23,11 @@ export function validarAsignacion(linea, numeroLinea, variables, errores) {
     return true;
   }
 
-  const tipoVariable = variables[variableDestino];
+  const tipoVariable = variables[variableDestino].tipo;
 
+  // =========================
   // COMILLAS
+  // =========================
 
   const cantidadComillas = (expresion.match(/"/g) || []).length;
 
@@ -33,15 +37,22 @@ export function validarAsignacion(linea, numeroLinea, variables, errores) {
     return true;
   }
 
+  // =========================
   // CAPTURA MAL ESCRITA
+  // =========================
 
-  if (expresion.includes("Captura")) {
+  if (
+    expresion.includes("Captura") &&
+    !/^Captura\.(Entero|Texto|Real|Logico)\(\)$/.test(expresion)
+  ) {
     errores.push(`Error sintáctico en línea ${numeroLinea}`);
 
     return true;
   }
 
+  // =========================
   // TEXTO
+  // =========================
 
   if (/^".*"$/.test(expresion)) {
     if (tipoVariable !== "Texto") {
@@ -51,7 +62,9 @@ export function validarAsignacion(linea, numeroLinea, variables, errores) {
     return true;
   }
 
+  // =========================
   // REAL
+  // =========================
 
   if (/^\d+\.\d+$/.test(expresion)) {
     if (tipoVariable !== "Real") {
@@ -61,7 +74,9 @@ export function validarAsignacion(linea, numeroLinea, variables, errores) {
     return true;
   }
 
+  // =========================
   // ENTERO
+  // =========================
 
   if (/^\d+$/.test(expresion)) {
     if (tipoVariable !== "Entero") {
@@ -71,9 +86,11 @@ export function validarAsignacion(linea, numeroLinea, variables, errores) {
     return true;
   }
 
+  // =========================
   // LOGICO
+  // =========================
 
-  if (expresion === "true" || expresion === "false") {
+  if (expresion === "verdadero" || expresion === "falso") {
     if (tipoVariable !== "Logico") {
       errores.push(`Error en línea ${numeroLinea}: Tipos incompatibles`);
     }
@@ -81,7 +98,9 @@ export function validarAsignacion(linea, numeroLinea, variables, errores) {
     return true;
   }
 
+  // =========================
   // VARIABLE A VARIABLE
+  // =========================
 
   if (/^[a-zA-Z][a-zA-Z0-9]*$/.test(expresion)) {
     if (!variables[expresion]) {
@@ -92,7 +111,7 @@ export function validarAsignacion(linea, numeroLinea, variables, errores) {
       return true;
     }
 
-    const tipoOrigen = variables[expresion];
+    const tipoOrigen = variables[expresion].tipo;
 
     if (tipoOrigen !== tipoVariable) {
       errores.push(`Error en línea ${numeroLinea}: Tipos incompatibles`);
@@ -101,7 +120,9 @@ export function validarAsignacion(linea, numeroLinea, variables, errores) {
     return true;
   }
 
+  // =========================
   // OPERACIONES MATEMÁTICAS
+  // =========================
 
   if (/".*"/.test(expresion)) {
     errores.push(
@@ -123,7 +144,7 @@ export function validarAsignacion(linea, numeroLinea, variables, errores) {
         continue;
       }
 
-      const tipoVar = variables[variable];
+      const tipoVar = variables[variable].tipo;
 
       if (tipoVar === "Texto" || tipoVar === "Logico") {
         errores.push(
@@ -132,6 +153,10 @@ export function validarAsignacion(linea, numeroLinea, variables, errores) {
       }
     }
   }
+
+  // =========================
+  // DESTINO NUMÉRICO
+  // =========================
 
   if (tipoVariable !== "Entero" && tipoVariable !== "Real") {
     errores.push(

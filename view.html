@@ -33,11 +33,15 @@
       <div class="line-numbers" id="lineNumbers">1</div>
 
       <!-- CODE -->
-      <textarea
-        id="codigo"
-        spellcheck="false"
-        placeholder="// Habla mi rey vas a programar a lo coleto que?, no y que eres loco 😎"
-      ></textarea>
+      <div class="editor-code">
+        <pre id="highlighting"></pre>
+
+        <textarea
+          id="codigo"
+          spellcheck="false"
+          placeholder="// Habla mi rey vas a programar a lo coleto que?, no y que eres loco 😎"
+        ></textarea>
+      </div>
     </main>
 
     <div class="resize-bar" id="resizeBar"></div>
@@ -46,7 +50,15 @@
     <footer class="bottom-panel">
       <div class="panel-header">TERMINAL</div>
 
-      <div id="resultado"></div>
+      <div class="terminal">
+        <div id="terminalOutput"></div>
+
+        <div class="terminal-input-container">
+          <span class="terminal-arrow">></span>
+
+          <input type="text" id="terminalInput" autocomplete="off" />
+        </div>
+      </div>
     </footer>
 
     <script src="script.js" type="module"></script>

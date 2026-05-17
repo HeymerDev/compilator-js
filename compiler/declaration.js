@@ -19,7 +19,10 @@ export function validarDeclaracion(linea, numeroLinea, variables, errores) {
     return true;
   }
 
-  variables[nombreVariable] = tipoDato;
+  variables[nombreVariable] = {
+    tipo: tipoDato,
+    valor: null,
+  };
 
   return true;
 }
