@@ -1,0 +1,9 @@
+edad Entero;
+
+edad = Captura.Texto();
+
+Mensaje.Texto("Tu edad es: ", edad);
+
+edad = edad + 1
+
+Mensaje.Texto("Nueva edad: ", edad);

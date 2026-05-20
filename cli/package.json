@@ -1,0 +1,26 @@
+{
+  "name": "costenol-cli",
+  "version": "1.0.0",
+  "description": "cli for costeñol lenguague",
+  "homepage": "https://github.com/HeymerDev/compilator-js#readme",
+  "bugs": {
+    "url": "https://github.com/HeymerDev/compilator-js/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HeymerDev/compilator-js.git"
+  },
+  "license": "MIT",
+  "author": "HeymerDev",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "costenol": "./index.js"
+  },
+  "dependencies": {
+    "readline-sync": "^1.4.10"
+  }
+}
