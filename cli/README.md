@@ -1,4 +1,3 @@
-````md id="m85y0f"
 # costenol-cli
 
 CLI oficial del lenguaje de programación experimental **Costeñol**.
@@ -197,4 +196,3 @@ Proyecto educativo enfocado en aprender:
 - análisis léxico
 - análisis sintáctico
 - tooling
-````
