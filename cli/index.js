@@ -2,9 +2,11 @@
 
 import fs from "fs";
 
+import { analizarCodigo } from "../compiler/compiler.js";
+
 import { ejecutarCodigo } from "./runtime/ejecutar.js";
 
-import { regexDeclaracion } from "../compiler/regex.js";
+import { escribirTerminal } from "./runtime/terminal.js";
 
 const archivo = process.argv[2];
 
@@ -13,48 +15,39 @@ const archivo = process.argv[2];
 // =========================
 
 if (!archivo) {
-  console.log("Debes enviar un archivo .pqek");
+  escribirTerminal("Debes enviar un archivo .pqek");
 
   process.exit(1);
 }
 
 // =========================
-// LEER CÓDIGO
+// LEER ARCHIVO
 // =========================
 
 const codigo = fs.readFileSync(archivo, "utf-8");
 
-const lineas = codigo.split("\n");
-
 // =========================
-// TABLA DE VARIABLES
+// COMPILAR
 // =========================
 
-const variables = {};
+const resultado = analizarCodigo(codigo);
+
+const errores = resultado.errores;
 
 // =========================
-// DECLARACIONES
+// ERRORES
 // =========================
 
-for (const lineaOriginal of lineas) {
-  const linea = lineaOriginal.trim();
+if (errores.length > 0) {
+  errores.forEach((error) => {
+    escribirTerminal(error);
+  });
 
-  if (regexDeclaracion.test(linea)) {
-    const match = linea.match(regexDeclaracion);
-
-    const nombre = match[1];
-
-    const tipo = match[2];
-
-    variables[nombre] = {
-      tipo,
-      valor: null,
-    };
-  }
+  process.exit(1);
 }
 
 // =========================
 // EJECUTAR
 // =========================
 
-await ejecutarCodigo(lineas, variables);
+await ejecutarCodigo(resultado.lineas, resultado.variables);
