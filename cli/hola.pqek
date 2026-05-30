@@ -1,6 +1,7 @@
 num1 Entero;
 num2 Entero;
-num1=Captura.Texto();
+sum Entero;
+num1=Captura.Entero();
 num2=Captura.Entero();
-sum=num1+num2);
-Mensaje.Texto(El resultado es:”sum”);
+sum=num1+num2;
+Mensaje.Texto("El resultado es: ",sum);
