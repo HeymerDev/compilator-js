@@ -16,6 +16,87 @@ El proyecto incluye:
 
 ---
 
+# Instalación del CLI
+
+Costeñol puede instalarse globalmente desde NPM.
+
+```bash
+npm install -g costenol-cli
+```
+
+Una vez instalado podrás ejecutar programas Costeñol desde cualquier ubicación de tu computadora.
+
+---
+
+## Ejecutar archivo
+
+```bash
+costenol archivo.pqek
+```
+
+Ejemplo:
+
+```bash
+costenol hola.pqek
+```
+
+---
+
+# Cómo ejecutar la IDE Web
+
+## 1. Clonar el repositorio
+
+```bash
+git clone https://github.com/HeymerDev/compilator-js.git
+```
+
+Entrar al proyecto:
+
+```bash
+cd compilator-js
+```
+
+---
+
+## 2. Instalar la extensión Live Server
+
+Abrir Visual Studio Code e instalar la extensión:
+
+**Live Server**
+
+Autor: Ritwick Dey
+
+---
+
+## 3. Abrir la IDE
+
+Ubicar el archivo:
+
+```bash
+view.html
+```
+
+Hacer clic derecho sobre el archivo y seleccionar:
+
+```text
+Open with Live Server
+```
+
+---
+
+## 4. Usar Costeñol
+
+Al abrirse el navegador encontrarás:
+
+- Editor de código.
+- Resaltado de sintaxis.
+- Numeración de líneas.
+- Terminal integrada.
+- Ejecución interactiva.
+- Validación sintáctica y semántica.
+
+Ahora podrás escribir programas `.pqek` y ejecutarlos directamente desde la IDE.
+
 # Características actuales
 
 ## Declaración de variables

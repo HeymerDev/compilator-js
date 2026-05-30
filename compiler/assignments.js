@@ -38,6 +38,20 @@ export function validarAsignacion(linea, numeroLinea, variables, errores) {
   }
 
   // =========================
+  // PARÉNTESIS
+  // =========================
+
+  const abiertos = (expresion.match(/\(/g) || []).length;
+
+  const cerrados = (expresion.match(/\)/g) || []).length;
+
+  if (abiertos !== cerrados) {
+    errores.push(`Error sintáctico en línea ${numeroLinea}`);
+
+    return true;
+  }
+
+  // =========================
   // CAPTURA MAL ESCRITA
   // =========================
 
