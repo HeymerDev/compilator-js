@@ -1,10 +1,6 @@
-mensaje Texto;
-edad Entero;
-
-mensaje = Captura.Texto();
-
-Mensaje.Texto(mensaje);
-
-edad = edad + 1;
-
-Mensaje.Texto("Nueva edad: ", edad);
+num1 Entero;
+num2 Entero;
+num1=Captura.Texto();
+num2=Captura.Entero();
+sum=num1+num2);
+Mensaje.Texto(El resultado es:”sum”);
